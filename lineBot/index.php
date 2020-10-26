@@ -52,20 +52,27 @@ foreach ($events as $event) {
     //     new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
     // );
 
-    //Buttonテンプレートメッセージを返信
-    if($events instanceof \LINE\LINEBot\Event\PostbackEvent)
-    {
-        replyTextMessage($bot, $event->getReplyToken(), 'Postback受信『' . $event->getPostbackData() . '』');
-        continue;
-    }
-    button($bot, $event->getReplyToken(),
-        'お天気お知らせ - 今日は天気予報は晴れです',
-        'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg',
-        'お天気お知らせ',
-        '今日は天気予報は晴れです',
-        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('明日の天気', 'tomorrow'),         //MessageTemplateActionBuilder:ユーザーに発現させるアクション
-        new \LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder('週末の天気', 'weekend'),         //PostbackTemplateActionBuilder:ユーザーからボットに文字列を送信するアクション
-        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')      //UriTemplateAction:URLを開かせるアクション
+    // //Buttonテンプレートメッセージを返信
+    // if($events instanceof \LINE\LINEBot\Event\PostbackEvent)
+    // {
+    //     replyTextMessage($bot, $event->getReplyToken(), 'Postback受信『' . $event->getPostbackData() . '』');
+    //     continue;
+    // }
+    // button($bot, $event->getReplyToken(),
+    //     'お天気お知らせ - 今日は天気予報は晴れです',
+    //     'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg',
+    //     'お天気お知らせ',
+    //     '今日は天気予報は晴れです',
+    //     new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('明日の天気', 'tomorrow'),         //MessageTemplateActionBuilder:ユーザーに発現させるアクション
+    //     new \LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder('週末の天気', 'weekend'),         //PostbackTemplateActionBuilder:ユーザーからボットに文字列を送信するアクション
+    //     new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')      //UriTemplateAction:URLを開かせるアクション
+    // );
+
+    //confirmテンプレートメッセージを返信
+    confirm($bot, $event->getReplyToken(), 
+        'webで詳しく見ますか？', 'webで詳しく見ますか？',
+        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('見る', 'https://google.jp'),
+        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('見ない', 'ignore'),
     );
 }
 
@@ -150,6 +157,25 @@ function button($bot, $replyToken, $text, $imageUrl, $title, $body, ...$actions)
     $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
         $text,
         new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder($title, $body, $imageUrl, $actionArray)
+    );
+    $response = $bot->replyMessage($replyToken, $builder);
+    if (!$response->isSucceeded())
+        {
+            error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+        }    
+}
+
+//confirmテンプレートを返す関数
+function confirm($bot, $replyToken, $text, $body, ...$actions)
+{
+    $actionArray = array();
+    foreach($actions as $value)
+    {
+        array_push($actionArray,$value);
+    }
+    $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+        $text,
+        new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder\ConfirmTemplateBuilder($body, $actionArray)
     );
     $response = $bot->replyMessage($replyToken, $builder);
     if (!$response->isSucceeded())
