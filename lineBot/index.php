@@ -50,7 +50,7 @@ foreach ($events as $event) {
 
 function aaa($bot, $replyToken, $text)
 {
-    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MassageBuilder\TextMessageBuilder($text));
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
 
     if (!$response->isSucceeded())
         {
