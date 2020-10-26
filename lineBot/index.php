@@ -83,7 +83,6 @@ function loca($bot, $replyToken, $title, $address, $lat, $lon)
     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
     if (!$response->isSucceeded())
         {
-            //エラー内容を出力
             error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
         }    
 }
