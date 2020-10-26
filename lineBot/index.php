@@ -50,9 +50,10 @@ foreach ($events as $event) {
 
 function aaa($bot, $replyToken, $text)
 {
-    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder($text));
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MassageBuilder\TextMessageBuilder($text));
 
-    if (!$response->isSucceeded()){
+    if (!$response->isSucceeded())
+        {
             //エラー内容を出力
             error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBOdy());
         }    
