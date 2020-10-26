@@ -53,14 +53,19 @@ foreach ($events as $event) {
     // );
 
     //Buttonテンプレートメッセージを返信
+    if($events instanceof \LINE\LINEBot\Event\PostbackEvent)
+    {
+        replyTextMessage($bot, $event->getReplyToken(), 'Postback受信『' . $event->getPostbackData() . '』');
+        continue;
+    }
     button($bot, $event->getReplyToken(),
         'お天気お知らせ - 今日は天気予報は晴れです',
         'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg',
         'お天気お知らせ',
         '今日は天気予報は晴れです',
-        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('明日の天気', 'tomorrow'),
-        new \LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder('週末の天気', 'weekend'),
-        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')
+        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('明日の天気', 'tomorrow'),         //MessageTemplateActionBuilder:ユーザーに発現させるアクション
+        new \LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder('週末の天気', 'weekend'),         //PostbackTemplateActionBuilder:ユーザーからボットに文字列を送信するアクション
+        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')      //UriTemplateAction:URLを開かせるアクション
     );
 }
 
