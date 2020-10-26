@@ -32,22 +32,12 @@ foreach ($events as $event) {
 
     //テキストを返信し次のイベント処理へ
     aaa($bot, $event->getReplyToken(), 'TextMessage');
+    
+    //画像を返信
+    image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
 }
 
-    //テキストを返信。引数はLINEbot、返信先、テキスト
-    // function replyTextMessage($bot, $replyToken, $text){
-        //返信を行いレスポンスを取得
-        //TextMessageBuilderの引数はテキスト
-        // $response = $bot->replyMessage($replyToken, new LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
-
-        //レスポンスが異常な場合
-        // if (!$response->isSucceeded()){
-            //エラー内容を出力
-            // error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBOdy());
-        // }
-    // }
-
-
+//’TextMessage’を返す関数
 function aaa($bot, $replyToken, $text)
 {
     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
@@ -55,6 +45,18 @@ function aaa($bot, $replyToken, $text)
     if (!$response->isSucceeded())
         {
             //エラー内容を出力
-            error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBOdy());
+            error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
+        }    
+}
+
+//画像を返す関数
+function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+{
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+
+    if (!$response->isSucceeded())
+        {
+            //エラー内容を出力
+            error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
         }    
 }
