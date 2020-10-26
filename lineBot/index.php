@@ -31,7 +31,7 @@ foreach ($events as $event) {
     // $bot->replyText($event->getReplyToken(), 'TextMassage');
 
     //テキストを返信し次のイベント処理へ
-    aaa($bot, $event->getReplyToken(), 'TextMessage');
+    // aaa($bot, $event->getReplyToken(), 'TextMessage');
     
     //画像を返信
     image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
