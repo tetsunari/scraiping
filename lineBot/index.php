@@ -35,6 +35,7 @@ foreach ($events as $event) {
     
     //画像を返信
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
+
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
 
     //位置情報の返信
@@ -81,6 +82,7 @@ function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
 function loca($bot, $replyToken, $title, $address, $lat, $lon)
 {
     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
+    
     if (!$response->isSucceeded())
         {
             error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
