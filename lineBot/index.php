@@ -35,7 +35,10 @@ foreach ($events as $event) {
     
     //画像を返信
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
-    image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
+    // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
+
+    //位置情報の返信
+    loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 2239.703473);
 }
 
 //’TextMessage’を返す関数
@@ -50,10 +53,22 @@ function aaa($bot, $replyToken, $text)
         }    
 }
 
-// //画像を返す関数
-// function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+//画像を返す関数
+function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+{
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+
+    if (!$response->isSucceeded())
+        {
+            //エラー内容を出力
+            error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
+        }    
+}
+
+//viewの画像を引数として与えないと表示できない
+// function image($bot, $replyToken, $originalImageUrl)
 // {
-//     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+//     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl));
 
 //     if (!$response->isSucceeded())
 //         {
@@ -62,11 +77,10 @@ function aaa($bot, $replyToken, $text)
 //         }    
 // }
 
-//画像を返す関数
-function image($bot, $replyToken, $originalImageUrl)
+//位置情報を返す関数
+function loca($bot, $replyToken, $title, $address, $lat, $lon)
 {
-    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl));
-
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $adderss, $lat, $lon));
     if (!$response->isSucceeded())
         {
             //エラー内容を出力
