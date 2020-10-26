@@ -18,10 +18,6 @@ $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATUR
 //署名をチェックし、正当であればリクエストをパースし配列へ、不正であれば例外処理
 $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
-class value{
-    public $aaa = ('TextMessage');
-}
-
 foreach ($events as $event) {
     //メッセージを返信
     // $response = $bot->replyMessage(
@@ -34,21 +30,21 @@ foreach ($events as $event) {
     // $bot->replyText($event->getReplyToken(), $event->getText());
     // $bot->replyText($event->getReplyToken(), 'TextMassage');
 
-    //テキストを返信
+    // //テキストを返信
     // aaa($bot, $event->getReplyToken(), 'TextMessage');
     
-    //画像を返信
+    // //画像を返信
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
 
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
 
-    //位置情報の返信
+    // //位置情報の返信
     // loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473);
 
-    //スタンプを返信
+    // //スタンプを返信
     // sticker($bot, $event->getReplyToken(), 1, 1);
 
-    //複数のメッセージをまとめて返信
+    // // 複数のメッセージをまとめて返信
     // multi($bot, $event->getReplyToken(),
     //     new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('TextMessage'),
     //     new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder('https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg'),
@@ -56,12 +52,15 @@ foreach ($events as $event) {
     //     new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
     // );
 
-    //複数のメッセージをまとめて返信
-    multi($bot, $event->getReplyToken(),
-        new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($this->aaa),
-        new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder('https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg'),
-        new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder('LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473),
-        new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
+    //Buttonテンプレートメッセージを返信
+    button($bot, $event->getReplyToken(),
+        'お天気お知らせ - 今日は天気予報は晴れです',
+        'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg',
+        'お天気お知らせ',
+        '今日は天気予報は晴れです',
+        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('明日の天気', 'tomorrow'),
+        new \LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder('週末の天気', 'weekend'),
+        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')
     );
 }
 
@@ -129,6 +128,24 @@ function multi($bot, $replyToken, ...$msgs)
     {
         $builder->add($value);
     }
+    $response = $bot->replyMessage($replyToken, $builder);
+    if (!$response->isSucceeded())
+        {
+            error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+        }    
+}
+
+//Buttonsテンプレートを返す関数
+function button($bot, $replyToken, $text, $imageUrl, $title, $body, ...$actions)
+{
+    $actionArray = array();
+    foreach($actions as $value){
+        array_push($actionArray, $value);
+    }
+    $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+        $text,
+        new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder($title, $body, $imageUrl, $actionArray)
+    );
     $response = $bot->replyMessage($replyToken, $builder);
     if (!$response->isSucceeded())
         {
