@@ -39,10 +39,18 @@ foreach ($events as $event) {
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
 
     //位置情報の返信
-    // loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ', 35.659025, 139.703473);
+    // loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473);
 
     //スタンプを返信
-    sticker($bot, $event->getReplyToken(), 1, 1);
+    // sticker($bot, $event->getReplyToken(), 1, 1);
+
+    //複数のメッセージをまとめて返信
+    multi($bot, $event->getReplyToken(),
+        new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('TextMessage'),
+        new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder('https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg'),
+        new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder('LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473),
+        new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder(1, 1)
+    );
 }
 
 //’TextMessage’を返す関数
@@ -95,6 +103,21 @@ function loca($bot, $replyToken, $title, $address, $lat, $lon)
 function sticker($bot, $replyToken, $packageID, $stickerID)
 {
     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageID, $stickerID));
+    if (!$response->isSucceeded())
+        {
+            error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+        }    
+}
+
+//複数のメッセージをまとめて返す関数
+function multi($bot, $replyToken, ...$msgs)
+{
+    $builder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+    foreach($msgs as $value)
+    {
+        $builder->add($value);
+    }
+    $response = $bot->replyMessage($replyToken, $builder);
     if (!$response->isSucceeded())
         {
             error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
