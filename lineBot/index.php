@@ -20,13 +20,13 @@
 
     foreach ($events as $event) {
         //メッセージを返信
-        // $response = $bot->replyMessage(
-        //     $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($event->getText())  
-        // );
+        $response = $bot->replyMessage(
+            $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($event->getText())  
+        );
 
         // //テキストを返信
         // error_log($bot->replyText($event->getReplyToken(), 'Textmessage'));
-        $bot->replyText($event->getReplyToken(), $event->getText());
+        // $bot->replyText($event->getReplyToken(), $event->getText());
 
         //テキストを返信し次のイベント処理へ
         //replyTextMessage($bot, $event->getReplyToken(), 'TextMessage');
