@@ -175,7 +175,7 @@ function confirm($bot, $replyToken, $text, $body, ...$actions)
     }
     $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
         $text,
-        new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder\ConfirmTemplateBuilder($body, $actionArray)
+        new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder($body, $actionArray)
     );
     $response = $bot->replyMessage($replyToken, $builder);
     if (!$response->isSucceeded())
