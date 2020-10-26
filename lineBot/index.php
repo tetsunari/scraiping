@@ -23,6 +23,7 @@
         $response = $bot->replyMessage(
             $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($event->getText())  
         );
+        error_log($response->getRawBody());
 
         // //テキストを返信
         // error_log($bot->replyText($event->getReplyToken(), 'Textmessage'));
