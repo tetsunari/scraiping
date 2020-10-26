@@ -44,6 +44,3 @@
                 // error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBOdy());
             // }
         // }
-
-?>
-    
