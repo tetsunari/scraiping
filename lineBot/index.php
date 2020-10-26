@@ -68,12 +68,25 @@ foreach ($events as $event) {
     //     new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('webで見る', 'https://google.jp')      //UriTemplateAction:URLを開かせるアクション
     // );
 
-    //confirmテンプレートメッセージを返信
-    confirm($bot, $event->getReplyToken(), 
-        'webで詳しく見ますか？', 'webで詳しく見ますか？',
-        new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('見る', 'https://google.jp'),
-        new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('見ない', 'ignore'),
-    );
+    // //confirmテンプレートメッセージを返信
+    // confirm($bot, $event->getReplyToken(), 
+    //     'webで詳しく見ますか？', 'webで詳しく見ますか？',
+    //     new \LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder('見る', 'https://google.jp'),
+    //     new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('見ない', 'ignore'),
+    // );
+
+    //carouselテンプレートメッセージを返信
+    $columnArray = array();
+    for($i = 0; $i < 5; $i++)
+    {
+        $actionArray = array();
+        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 1, 'c-' . $i . '-' . 1));
+        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 2, 'c-' . $i . '-' . 2));
+        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 3, 'c-' . $i . '-' . 3));
+        $column = new \LINE\LINEBot\TemplateActionBuilder\CarouselColumnTemplateActionBuilder( ($i + 1) . '日後の天気', '晴れ', 'https://' . $_SERVER['HTTP_HOST'] . '/img/template.jpg', $actionArray);
+        array_push($columnArray, $column);
+    }
+    carousel($bot, $event->getReplyToken(), '今後の天気予報', $columnArray);
 }
 
 //’TextMessage’を返す関数
@@ -176,6 +189,20 @@ function confirm($bot, $replyToken, $text, $body, ...$actions)
     $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
         $text,
         new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder($body, $actionArray)
+    );
+    $response = $bot->replyMessage($replyToken, $builder);
+    if (!$response->isSucceeded())
+        {
+            error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+        }    
+}
+
+//carouselテンプレートを返す関数
+function carousel($bot, $replyToken, $text, $columnArray)
+{
+    $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+        $text,
+        new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder($columnArray)
     );
     $response = $bot->replyMessage($replyToken, $builder);
     if (!$response->isSucceeded())
