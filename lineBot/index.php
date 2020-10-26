@@ -34,7 +34,8 @@ foreach ($events as $event) {
     // aaa($bot, $event->getReplyToken(), 'TextMessage');
     
     //画像を返信
-    image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
+    // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
+    image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
 }
 
 //’TextMessage’を返す関数
@@ -49,10 +50,22 @@ function aaa($bot, $replyToken, $text)
         }    
 }
 
+// //画像を返す関数
+// function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+// {
+//     $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+
+//     if (!$response->isSucceeded())
+//         {
+//             //エラー内容を出力
+//             error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
+//         }    
+// }
+
 //画像を返す関数
-function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+function image($bot, $replyToken, $originalImageUrl)
 {
-    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl));
 
     if (!$response->isSucceeded())
         {
