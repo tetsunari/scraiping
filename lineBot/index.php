@@ -2,10 +2,6 @@
 // Composerでインストールしたライブラリを一括読み込み
 require_once __DIR__ . '/vendor/autoload.php';
 
-//POSTメソッドで渡される値を取得、表示
-// $inputString = file_get_contents('php://input');
-// error_log($inputString);
-
 // アクセストークンを使いCurlHTTPClientをインスタンス化
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
 
@@ -16,9 +12,159 @@ $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('CHANNEL_SECRET
 $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATURE];
 
 //署名をチェックし、正当であればリクエストをパースし配列へ、不正であれば例外処理
-$events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
+try{
+    $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
+}catch(\LINE\LINEBot\Exception\InvalidSignatureException $e)
+{
+    {
+        error_log('parseEventRequest faild. InvalidSignatureException => '.var_export($e, ture));
+    }
+}catch(\LINE\LINEBot\Exception\UnknownEventTypeException $e)
+{
+    {
+        error_log('parseEventRequest faild. UnknownEventTypeException => '.var_export($e, ture));
+    }
+}catch(\LINE\LINEBot\Exception\UnknownMessageTypeException $e)
+{
+    {
+        error_log('parseEventRequest faild. UnknownMessageTypeException => '.var_export($e, ture));
+    }
+}catch(\LINE\LINEBot\Exception\InvalidEventRequestException $e)
+{
+    {
+        error_log('parseEventRequest faild. InvalidEventRequestException => '.var_export($e, ture));
+    }
+}
 
+//配列に格納された各イベントをループで処理
 foreach ($events as $event) {
+    if (!($event instanceof \LINE\LINEBot\Event\MessageEvent))
+    {
+        error_log('Non message event has cone');
+        continue;
+    }
+    if (!($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage))
+    {
+        error_log('Non message event has cone');
+        continue;
+    }
+
+    //おうむ返し
+    $bot->replyText($event->getREplyToken(), $event->getText());
+}
+?>
+    //’TextMessage’を返す関数
+    function aaa($bot, $replyToken, $text)
+    {
+        $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
+
+        if (!$response->isSucceeded())
+            {
+                //エラー内容を出力
+                error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
+            }    
+    }
+
+    //画像を返す関数
+    function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
+    {
+        $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($originalImageUrl, $viewImageUrl));
+
+        if (!$response->isSucceeded())
+            {
+                //エラー内容を出力
+                error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
+            }   
+    }
+
+    //位置情報を返す関数
+    function loca($bot, $replyToken, $title, $address, $lat, $lon)
+    {
+        $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+
+    //スタンプを返す関数
+    function sticker($bot, $replyToken, $packageID, $stickerID)
+    {
+        $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder($packageID, $stickerID));
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+
+    //複数のメッセージをまとめて返す関数
+    function multi($bot, $replyToken, ...$msgs)
+    {
+        $builder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+        foreach($msgs as $value)
+        {
+            $builder->add($value);
+        }
+        $response = $bot->replyMessage($replyToken, $builder);
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+
+    //Buttonsテンプレートを返す関数
+    function button($bot, $replyToken, $text, $imageUrl, $title, $body, ...$actions)
+    {
+        $actionArray = array();
+        foreach($actions as $value){
+            array_push($actionArray, $value);
+        }
+        $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+            $text,
+            new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder($title, $body, $imageUrl, $actionArray)
+        );
+        $response = $bot->replyMessage($replyToken, $builder);
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+
+    //confirmテンプレートを返す関数
+    function confirm($bot, $replyToken, $text, $body, ...$actions)
+    {
+        $actionArray = array();
+        foreach($actions as $value)
+        {
+            array_push($actionArray,$value);
+        }
+        $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+            $text,
+            new \LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder($body, $actionArray)
+        );
+        $response = $bot->replyMessage($replyToken, $builder);
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+
+    //carouselテンプレートを返す関数
+    function carousel($bot, $replyToken, $text, $columnArray)
+    {
+        $builder = new \LINE\LINEBot\MessageBuilder\TemplateMessageBuilder(
+            $text,
+            new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder($columnArray)
+        );
+        $response = $bot->replyMessage($replyToken, $builder);
+        if (!$response->isSucceeded())
+            {
+                error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+            }    
+    }
+}
+
+?>
     //メッセージを返信
     // $response = $bot->replyMessage(
     //     $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($event->getText())  
@@ -76,18 +222,18 @@ foreach ($events as $event) {
     // );
 
     //carouselテンプレートメッセージを返信
-    $columnArray = array();
-    for($i = 0; $i < 5; $i++)
-    {
-        $actionArray = array();
-        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 1, 'c-' . $i . '-' . 1));
-        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 2, 'c-' . $i . '-' . 2));
-        array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 3, 'c-' . $i . '-' . 3));
-        $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder( ($i + 1) . '日後の天気', '晴れ', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg', $actionArray);
-        array_push($columnArray, $column);
-    }
-    carousel($bot, $event->getReplyToken(), '今後の天気予報', $columnArray);
-}
+    // $columnArray = array();
+    // for($i = 0; $i < 5; $i++)
+    // {
+    //     $actionArray = array();
+    //     array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 1, 'c-' . $i . '-' . 1));
+    //     array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 2, 'c-' . $i . '-' . 2));
+    //     array_push($actionArray, new \LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder('ボタン' . $i . '-' . 3, 'c-' . $i . '-' . 3));
+    //     $column = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder( ($i + 1) . '日後の天気', '晴れ', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/template.jpg', $actionArray);
+    //     array_push($columnArray, $column);
+    // }
+    // carousel($bot, $event->getReplyToken(), '今後の天気予報', $columnArray);
+
 
 //’TextMessage’を返す関数
 function aaa($bot, $replyToken, $text)
