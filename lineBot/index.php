@@ -80,7 +80,7 @@ function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
 //位置情報を返す関数
 function loca($bot, $replyToken, $title, $address, $lat, $lon)
 {
-    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $adderss, $lat, $lon));
+    $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder($title, $address, $lat, $lon));
     if (!$response->isSucceeded())
         {
             //エラー内容を出力
