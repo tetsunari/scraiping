@@ -18,6 +18,10 @@ $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATUR
 //署名をチェックし、正当であればリクエストをパースし配列へ、不正であれば例外処理
 $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
+class value{
+    public $aaa = ('TextMessage');
+}
+
 foreach ($events as $event) {
     //メッセージを返信
     // $response = $bot->replyMessage(
@@ -53,14 +57,9 @@ foreach ($events as $event) {
     // );
 
     //複数のメッセージをまとめて返信
-    $aaa = ('TextMessage');
-    $image = ('https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
-    $image2 = ('https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg');
-    // $loca = ('LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473);
-    // $sticker = (1, 1);
     multi($bot, $event->getReplyToken(),
         new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($this->aaa),
-        new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($this->image, $this->image2),
+        new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder('https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/view.jpg'),
         new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder('LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 139.703473),
         new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 1)
     );
@@ -87,7 +86,7 @@ function image($bot, $replyToken, $originalImageUrl, $viewImageUrl)
         {
             //エラー内容を出力
             error_log('Failed! '. $response->getHTTPStatus .' ' . $response->getRawBody());
-        }    
+        }   
 }
 
 //viewの画像を引数として与えないと表示できない
