@@ -25,6 +25,7 @@
         // );
 
         // //テキストを返信
+        var_dump($event->getReplyToken());
         $bot->replyText($event->getReplyToken(), 'Textmessage');
 
         //テキストを返信し次のイベント処理へ
