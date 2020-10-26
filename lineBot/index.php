@@ -38,7 +38,7 @@ foreach ($events as $event) {
     // image($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg');
 
     //位置情報の返信
-    loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ヒカリエ27階', 35.659025, 2239.703473);
+    loca($bot, $event->getReplyToken(), 'LINE', '東京都渋谷区渋谷2-21-1 ', 35.659025, 2239.703473);
 }
 
 //’TextMessage’を返す関数
